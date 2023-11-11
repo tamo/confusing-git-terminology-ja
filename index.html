@@ -1,76 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+<meta charset="utf-8">
+<title>困る git 用語 (Confusing git terminology)</title>
+</head>
+<body>
 <article class="hentry" role="article">
 <header>
-<h1 class="entry-title">Confusing git terminology</h1>
+<h1 class="entry-title">困る git 用語 (Confusing git terminology)</h1>
 
-<div class="post-tags">
-  
-</div>
 <p class="meta">
-<time datetime="2023-11-01T08:45:26" pubdate data-updated="true"></time>
+This is a translated work. The original post was written by Julia Evans and you can read it
+<a href="https://jvns.ca/blog/2023/11/01/confusing-git-terminology/">here</a>.
+(これは Julia Evans さんのブログ記事
+<a href="https://jvns.ca/blog/2023/11/01/confusing-git-terminology/">Confusing git terminology</a>
+の日本語訳です。)
 </p>
+
+<!-- <p class="meta">
+<time datetime="2023-11-01T08:45:26" pubdate="" data-updated="true"></time>
+</p> -->
 </header>
 <div class="entry-content">
      
+<p>どうも！ 今ちょっとずつ git の説明をしているところなんですが問題がありまして、
+git を15年近く使って git のクセの強さに慣れすぎた私は、
+どこが分かりにくいのかを忘れてしまいがちなんですよね。</p>
+<!-- <p>Hello! I’m slowly working on explaining git. One of my biggest problems is that
+after almost 15 years of using git, I’ve become very used to git’s
+idiosyncracies and it’s easy for me to forget what’s confusing about it.</p> -->
 
-<p>Hello! I&rsquo;m slowly working on explaining git. One of my biggest problems is that
-after almost 15 years of using git, I&rsquo;ve become very used to git&rsquo;s
-idiosyncracies and it&rsquo;s easy for me to forget what&rsquo;s confusing about it.</p>
-
-<p>So I asked people <a href="https://social.jvns.ca/@b0rk/111330564535454510">on Mastodon</a>:</p>
+<p>なので、みんなに <a href="https://social.jvns.ca/@b0rk/111330564535454510">Mastodon で</a>聞いてみました:</p>
+<!-- <p>So I asked people <a href="https://social.jvns.ca/@b0rk/111330564535454510">on Mastodon</a>:</p> -->
 
 <blockquote>
-<p>what git jargon do you find confusing? thinking of writing a blog post that explains some of git&rsquo;s weirder terminology: &ldquo;detached HEAD state”, &ldquo;fast-forward&rdquo;, &ldquo;index/staging area/staged&rdquo;, “ahead of &lsquo;origin/main&rsquo; by 1 commit”, etc</p>
+<p>どんな git 用語が難しいと思いますか？ ブログ記事で git のココがヘン！な言葉遣いを解説しようと思ってます→ detached HEAD state とか fast-forward とか index/staging area/staged あとは ahead of 'origin/main' by 1 commit とか</p>
+<!-- <p>what git jargon do you find confusing? thinking of writing a blog post that explains some of git’s weirder terminology: “detached HEAD state”, “fast-forward”, “index/staging area/staged”, “ahead of ‘origin/main’ by 1 commit”, etc</p> -->
 </blockquote>
 
-<p>I got a lot of GREAT answers and I&rsquo;ll try to summarize some of them here.  Here&rsquo;s a list of the terms:</p>
+<p>すごくいい回答をいっぱいもらったので一部をまとめたいと思います。用語一覧はこちら:</p>
+<!-- <p>I got a lot of GREAT answers and I’ll try to summarize some of them here.  Here’s a list of the terms:</p> -->
 
 <ul>
-<li><a href="#head-and-heads">HEAD and &ldquo;heads&rdquo;</a></li>
-<li><a href="#detached-head-state">&ldquo;detached HEAD state&rdquo;</a></li>
-<li><a href="#ours-and-theirs-while-merging-or-rebasing">&ldquo;ours&rdquo; and &ldquo;theirs&rdquo; while merging or rebasing</a></li>
-<li><a href="#your-branch-is-up-to-date-with-origin-main">&ldquo;Your branch is up to date with &lsquo;origin/main&rsquo;&rdquo;</a></li>
+<li><a href="#head-and-heads">HEAD and “heads”</a></li>
+<li><a href="#detached-head-state">“detached HEAD state”</a></li>
+<li><a href="#ours-and-theirs-while-merging-or-rebasing">“ours” and “theirs” while merging or rebasing</a></li>
+<li><a href="#your-branch-is-up-to-date-with-origin-main">“Your branch is up to date with ‘origin/main’”</a></li>
 <li><a href="#head-head-head-head-head-2-head-2">HEAD^, HEAD~ HEAD^^, HEAD~~, HEAD^2, HEAD~2</a></li>
-<li><a href="#and">.. and &hellip;</a></li>
-<li><a href="#can-be-fast-forwarded">&ldquo;can be fast-forwarded&rdquo;</a></li>
-<li><a href="#reference-symbolic-reference">&ldquo;reference&rdquo;, &ldquo;symbolic reference&rdquo;</a></li>
+<li><a href="#and">.. and ...</a></li>
+<li><a href="#can-be-fast-forwarded">“can be fast-forwarded”</a></li>
+<li><a href="#reference-symbolic-reference">“reference”, “symbolic reference”</a></li>
 <li><a href="#refspecs">refspecs</a></li>
-<li><a href="#tree-ish">&ldquo;tree-ish&rdquo;</a></li>
-<li><a href="#index-staged-cached">&ldquo;index&rdquo;, &ldquo;staged&rdquo;, &ldquo;cached&rdquo;</a></li>
-<li><a href="#reset-revert-restore">&ldquo;reset&rdquo;, &ldquo;revert&rdquo;, &ldquo;restore&rdquo;</a></li>
-<li><a href="#untracked-files-remote-tracking-branch-track-remote-branch">&ldquo;untracked files&rdquo;, &ldquo;remote-tracking branch&rdquo;, &ldquo;track remote branch&rdquo;</a></li>
+<li><a href="#tree-ish">“tree-ish”</a></li>
+<li><a href="#index-staged-cached">“index”, “staged”, “cached”</a></li>
+<li><a href="#reset-revert-restore">“reset”, “revert”, “restore”</a></li>
+<li><a href="#untracked-files-remote-tracking-branch-track-remote-branch">“untracked files”, “remote-tracking branch”, “track remote branch”</a></li>
 <li><a href="#checkout">checkout</a></li>
 <li><a href="#reflog">reflog</a></li>
 <li><a href="#merge-vs-rebase-vs-cherry-pick">merge vs rebase vs cherry-pick</a></li>
-<li><a href="#rebase-onto">rebase &ndash;onto</a></li>
+<li><a href="#rebase-onto">rebase –onto</a></li>
 <li><a href="#commit">commit</a></li>
 <li><a href="#more-confusing-terms">more confusing terms</a></li>
 </ul>
 
-<p>I&rsquo;ve done my best to explain what&rsquo;s going on with these terms, but they
+<p>できるだけ詳しく説明したつもりですが、
+ざっくり git の主な機能ぜんぶに渡る内容なので、ぜんぜん
+単発記事にまとめられる量ではなく、一部はかなり断片的であることをご了承ください。</p>
+<!-- <p>I’ve done my best to explain what’s going on with these terms, but they
 cover basically every single major feature of git which is definitely too much
-for a single blog post so it&rsquo;s pretty patchy in some places.</p>
+for a single blog post so it’s pretty patchy in some places.</p> -->
 
-<h3 id="head-and-heads"><code>HEAD</code> and &ldquo;heads&rdquo;</h3>
+<h3 id="head-and-heads"><code>HEAD</code> and “heads”</h3>
 
-<p>A few people said they were confused by the terms <code>HEAD</code> and <code>refs/heads/main</code>,
-because it sounds like it&rsquo;s some complicated technical internal thing.</p>
+<p>何人か、<code>HEAD</code> と <code>refs/heads/main</code> の違いが分からなかったという人がいました。
+なんだか内部の込み入った技術的なやつっぽい感じですし。</p>
+<!-- <p>A few people said they were confused by the terms <code>HEAD</code> and <code>refs/heads/main</code>,
+because it sounds like it’s some complicated technical internal thing.</p> -->
 
-<p>Here&rsquo;s a quick summary:</p>
+<p>簡単に言うと:</p>
+<!-- <p>Here’s a quick summary:</p> -->
 
 <ul>
-<li>&ldquo;heads&rdquo; are &ldquo;branches&rdquo;. Internally in git, branches are stored in a directory called <code>.git/refs/heads</code>. (technically the <a href="https://git-scm.com/docs/gitglossary">official git glossary</a> says that the branch is all the commits on it and the head is just the most recent commit, but they&rsquo;re 2 different ways to think about the same thing)</li>
-<li><code>HEAD</code> is the current branch. It&rsquo;s stored in <code>.git/HEAD</code>.</li>
+<li>heads はブランチです。git 内部ではブランチが <code>.git/refs/heads</code> というディレクトリに格納されているのです。(技術的なことを言うと、<a href="https://git-scm.com/docs/gitglossary">公式 git 用語集</a> [日本語はないみたい] によれば branch というのはその commit すべてのことで、head は最新の commit だけを指すとのことですが、まあ同じものを別の言い方で表しているだけです)</li>
+<!-- <li>“heads” are “branches”. Internally in git, branches are stored in a directory called <code>.git/refs/heads</code>. (technically the <a href="https://git-scm.com/docs/gitglossary">official git glossary</a> says that the branch is all the commits on it and the head is just the most recent commit, but they’re 2 different ways to think about the same thing)</li> -->
+<li><code>HEAD</code> は現在のブランチです。これは格納場所が <code>.git/HEAD</code> です。</li>
+<!-- <li><code>HEAD</code> is the current branch. It’s stored in <code>.git/HEAD</code>.</li> -->
 </ul>
 
-<p>I think that &ldquo;a <code>head</code> is a branch, <code>HEAD</code> is the current branch&rdquo; is a good
-candidate for the weirdest terminology choice in git, but it&rsquo;s definitely too
-late for a clearer naming scheme so let&rsquo;s move on.</p>
+<p>私としては「<code>head</code> がブランチで <code>HEAD</code> が現ブランチ」というのは
+最凶 git 用語賞の有力候補なわけですが、もう名前を変えるには絶望的に遅すぎますので
+このまま続けましょう。</p>
+<!-- <p>I think that “a <code>head</code> is a branch, <code>HEAD</code> is the current branch” is a good
+candidate for the weirdest terminology choice in git, but it’s definitely too
+late for a clearer naming scheme so let’s move on.</p> -->
 
-<p>There are some important exceptions to &ldquo;HEAD is the current branch&rdquo;, which we&rsquo;ll talk about next.</p>
+<p>実は「HEAD が現在のブランチ」という説明には大きな例外があります。それを次に話します。</p>
+<!-- <p>There are some important exceptions to “HEAD is the current branch”, which we’ll talk about next.</p> -->
 
-<h3 id="detached-head-state">&ldquo;detached HEAD state&rdquo;</h3>
+<h3 id="detached-head-state">“detached HEAD state”</h3>
 
-<p>You&rsquo;ve probably seen this message:</p>
+<p>きっとこういうメッセージを見たことがあるはずです:</p>
+<!-- <p>You’ve probably seen this message:</p> -->
 
 <pre><code>$ git checkout v0.1
 You are in 'detached HEAD' state. You can look around, make experimental
@@ -80,114 +111,176 @@ state without impacting any branches by switching back to a branch.
 [...]
 </code></pre>
 
-<p>Here&rsquo;s the deal with this message:</p>
+<p>これはつまりどういうことかと言うと:</p>
+<!-- <p>Here’s the deal with this message:</p> -->
 
 <ul>
-<li>In Git, usually you have a &ldquo;current branch&rdquo; checked out, for example <code>main</code>.</li>
-<li>The place the current branch is stored is called <code>HEAD</code>.</li>
-<li>Any new commits you make will get added to your current branch, and if you run <code>git merge other_branch</code>, that will also affect your current branch</li>
-<li>But <code>HEAD</code> doesn&rsquo;t <strong>have</strong> to be a branch! Instead it can be a commit ID.</li>
-<li>Git calls this state (where HEAD is a commit ID instead of a branch) &ldquo;detached HEAD state&rdquo;</li>
-<li>For example, you can get into detached HEAD state by checking out a tag, because a tag isn&rsquo;t a branch</li>
-<li>if you don&rsquo;t have a current branch, a bunch of things break:
+<li>ふつう git では現ブランチをチェックアウトしてあります。たとえば <code>main</code> みたいに。</li>
+<!-- <li>In Git, usually you have a “current branch” checked out, for example <code>main</code>.</li> -->
+<li>その現ブランチが格納されている場所を <code>HEAD</code> といいます。</li>
+<!-- <li>The place the current branch is stored is called <code>HEAD</code>.</li> -->
+<li>新しい commit は自分の現ブランチに加えられていきますし、<code>git merge other_branch</code> が効果を持つのもこの現ブランチに対してです。</li>
+<!-- <li>Any new commits you make will get added to your current branch, and if you run <code>git merge other_branch</code>, that will also affect your current branch</li> -->
+<li>しかし、<code>HEAD</code> はブランチ<strong>以外</strong>でもいいのです！ 単なる commit ID で構いません。</li>
+<!-- <li>But <code>HEAD</code> doesn’t <strong>have</strong> to be a branch! Instead it can be a commit ID.</li> -->
+<li>その状態 (HEAD がブランチではなく commit ID である) のことを git は detached HEAD state と呼んでいます。</li>
+<!-- <li>Git calls this state (where HEAD is a commit ID instead of a branch) “detached HEAD state”</li> -->
+<li>たとえばタグをチェックアウトすると detached HEAD state に入ります。タグはブランチではないからです。</li>
+<!-- <li>For example, you can get into detached HEAD state by checking out a tag, because a tag isn’t a branch</li> -->
+<li>このように現ブランチがない状態では、いろんなことが動作しません:
+<!-- <li>if you don’t have a current branch, a bunch of things break: -->
 
 <ul>
-<li><code>git pull</code> doesn&rsquo;t work at all (since the whole point of it is to update your current branch)</li>
-<li>neither does <code>git push</code> unless you use it in a special way</li>
-<li><code>git commit</code>, <code>git merge</code>, <code>git rebase</code>, and <code>git cherry-pick</code> <strong>do</strong> still
-work, but they&rsquo;ll leave you with &ldquo;orphaned&rdquo; commits that aren&rsquo;t connected
-to any branch, so those commits will be hard to find</li>
+<li><code>git pull</code> はダメです (それってつまり現ブランチを更新するためのものなわけですから)</li>
+<!-- <li><code>git pull</code> doesn’t work at all (since the whole point of it is to update your current branch)</li> -->
+<li><code>git push</code> もできません (特殊な使い方をしない限りは)</li>
+<!-- <li>neither does <code>git push</code> unless you use it in a special way</li> -->
+<li><code>git commit</code>, <code>git merge</code>, <code>git rebase</code>, <code>git cherry-pick</code> は<strong>できます</strong>
+が、どのブランチにも属さない (orphaned な) commit ができてしまって、
+あとから探すのは大変になります</li>
+<!-- <li><code>git commit</code>, <code>git merge</code>, <code>git rebase</code>, and <code>git cherry-pick</code> <strong>do</strong> still
+work, but they’ll leave you with “orphaned” commits that aren’t connected
+to any branch, so those commits will be hard to find</li> -->
 </ul></li>
-<li>You can get out of detached HEAD state by either creating a new branch or switching to an existing branch</li>
+<li>detached HEAD state から脱出するには、新しいブランチを作るか既存ブランチに switch します。</li>
+<!-- <li>You can get out of detached HEAD state by either creating a new branch or switching to an existing branch</li> -->
 </ul>
 
-<h3 id="ours-and-theirs-while-merging-or-rebasing">&ldquo;ours&rdquo; and &ldquo;theirs&rdquo; while merging or rebasing</h3>
+<h3 id="ours-and-theirs-while-merging-or-rebasing">“ours” and “theirs” while merging or rebasing</h3>
 
-<p>If you have a merge conflict, you can run <code>git checkout --ours file.txt</code> to pick the version of <code>file.txt</code> from the &ldquo;ours&rdquo; side. But which side is &ldquo;ours&rdquo; and which side is &ldquo;theirs&rdquo;?</p>
+<p>マージ・コンフリクトがあるとき <code>git checkout --ours file.txt</code> として「こっち (ours)」側バージョンにすることができます。でもどっちが「こっち」で、どっちが「あっち (theirs)」なんでしょう？</p>
+<!-- <p>If you have a merge conflict, you can run <code>git checkout --ours file.txt</code> to pick the version of <code>file.txt</code> from the “ours” side. But which side is “ours” and which side is “theirs”?</p> -->
 
-<p>I always find this confusing and I never use <code>git checkout --ours</code> because of
-that, but I looked it up to see which is which.</p>
+<p>私はいつもこれが分からなくなるので <code>git checkout --ours</code> をまったく使っていないのですが、
+どっちがどっちなのか調べてみました。</p>
+<!-- <p>I always find this confusing and I never use <code>git checkout --ours</code> because of
+that, but I looked it up to see which is which.</p> -->
 
-<p>For merges, here&rsquo;s how it works: the current branch is &ldquo;ours&rdquo; and the branch
-you&rsquo;re merging in is &ldquo;theirs&rdquo;, like this. Seems reasonable.</p>
+<p>merge の場合はこうなります: 現ブランチが「こっち (ours)」で、
+こっちにマージしようとしているブランチが「あっち (theirs)」というわけです。なるほど。</p>
+<!-- <p>For merges, here’s how it works: the current branch is “ours” and the branch
+you’re merging in is “theirs”, like this. Seems reasonable.</p> -->
 
-<pre><code>$ git checkout merge-into-ours # current branch is &quot;ours&quot;
-$ git merge from-theirs # branch we're merging in is &quot;theirs&quot;
+<pre><code>$ git checkout merge-into-ours # 現ブランチが「こっち」
+$ git merge from-theirs # 「あっち」をマージする
 </code></pre>
+<!-- <pre><code>$ git checkout merge-into-ours # current branch is "ours"
+$ git merge from-theirs # branch we're merging in is "theirs"
+</code></pre> -->
 
-<p>For rebases it&rsquo;s the opposite &ndash; the current branch is &ldquo;theirs&rdquo; and the target branch we&rsquo;re rebasing onto is &ldquo;ours&rdquo;, like this:</p>
+<p>でも rebase だと逆で、現ブランチが「あっち (theirs)」で、リベース先のブランチが「こっち (ours)」になります:</p>
+<!-- <p>For rebases it’s the opposite – the current branch is “theirs” and the target branch we’re rebasing onto is “ours”, like this:</p> -->
 
-<pre><code>$ git checkout theirs # current branch is &quot;theirs&quot;
-$ git rebase ours # branch we're rebasing onto is &quot;ours&quot;
+<pre><code>$ git checkout theirs # 現ブランチが「あっち」
+$ git rebase ours # 「こっち」にリベースする
 </code></pre>
+<!-- <pre><code>$ git checkout theirs # current branch is "theirs"
+$ git rebase ours # branch we're rebasing onto is "ours"
+</code></pre> -->
 
-<p>I think the reason for this is that under the hood <code>git rebase main</code> is
+<p>たぶんこれは内部に理由があって、<code>git rebase main</code> というのは
+現ブランチの commit を次々と <code>main</code> ブランチにコピーすることなんです (何を言ってるのか
+分からない人は、この <a href="https://gist.github.com/jvns/0f45c910ea2d255c6e130299c99c3123"><code>git merge</code> を使って <code>git rebase</code> する変なシェルスクリプト</a>をご覧いただけますが、
+私自身もこれは分かりにくいなと思っています。</p>
+<!-- <p>I think the reason for this is that under the hood <code>git rebase main</code> is
 repeatedly merging commits from the current branch into a copy of the <code>main</code> branch (you can
 see what I mean by that in <a href="https://gist.github.com/jvns/0f45c910ea2d255c6e130299c99c3123">this weird shell script the implements <code>git rebase</code> using <code>git merge</code></a>. But I
-still find it confusing.</p>
+still find it confusing.</p> -->
 
-<p><a href="https://nitaym.github.io/ourstheirs/">This nice tiny site</a> explains the &ldquo;ours&rdquo; and &ldquo;theirs&rdquo; terms.</p>
+<p><a href="https://nitaym.github.io/ourstheirs/">This nice tiny site</a> explains the “ours” and “theirs” terms.</p>
 
-<p>A couple of people also mentioned that VSCode calls &ldquo;ours&rdquo;/&ldquo;theirs&rdquo; &ldquo;current
-change&rdquo;/&ldquo;incoming change&rdquo;, and that it&rsquo;s confusing in the exact same way.</p>
+<p>VSCode が ours/theirs のことを current/incoming と呼ぶのも完全に同じ理由から分かりにくい、
+という人も数人いました。</p>
+<!-- <p>A couple of people also mentioned that VSCode calls “ours”/“theirs” “current
+change”/“incoming change”, and that it’s confusing in the exact same way.</p> -->
 
-<h3 id="your-branch-is-up-to-date-with-origin-main">&ldquo;Your branch is up to date with &lsquo;origin/main&rsquo;&rdquo;</h3>
+<h3 id="your-branch-is-up-to-date-with-origin-main">“Your branch is up to date with ‘origin/main’”</h3>
 
-<p>This message seems straightforward &ndash; it&rsquo;s saying that your <code>main</code> branch is up
-to date with the origin!</p>
+<p>このメッセージはそのままの意味ですね。自分の <code>main</code> ブランチが最新 origin に
+追従できていると言っています！</p>
+<!-- <p>This message seems straightforward – it’s saying that your <code>main</code> branch is up
+to date with the origin!</p> -->
 
-<p>But it&rsquo;s actually a little misleading. You might think that this means that
-your <code>main</code> branch is up to date. It doesn&rsquo;t. What it <strong>actually</strong> means is &ndash;
+<p>でも実は少し誤解を招くところがあります。これってつまり
+<code>main</code> ブランチは最新ってことだよね、と思うかもしれませんが、違うんです。これが<strong>本当に</strong>
+言っているのは、前回 <code>git fetch</code> か <code>git pull</code> したのが 5 日前なら、この <code>main</code>
+ブランチは <strong>5 日前の</strong>変更点まで追従できてますよ、ということなんです。</p>
+<!-- <p>But it’s actually a little misleading. You might think that this means that
+your <code>main</code> branch is up to date. It doesn’t. What it <strong>actually</strong> means is –
 if you last ran <code>git fetch</code> or <code>git pull</code> 5 days ago, then your <code>main</code> branch
-is up to date with all the changes <strong>as of 5 days ago</strong>.</p>
+is up to date with all the changes <strong>as of 5 days ago</strong>.</p> -->
 
-<p>So if you don&rsquo;t realize that, it can give you a false sense of security.</p>
+<p>というわけで、気づかないでいると間違った安心感を持ちかねません。</p>
+<!-- <p>So if you don’t realize that, it can give you a false sense of security.</p> -->
 
-<p>I think git could theoretically give you a more useful message like &ldquo;is up to
-date with the origin&rsquo;s <code>main</code> <strong>as of your last fetch 5 days ago</strong>&rdquo; because the time
-that the most recent fetch happened is stored in the reflog, but it doesn&rsquo;t.</p>
+<p>理論上 git はもっと役立つメッセージを出せると思いますが、たとえば
+「origin から<strong>直近で fetch した 5 日前時点の</strong> <code>main</code> に up-to-date です」
+みたいなことも (reflog に直近の fetch 時刻があるので) 可能なはずですが、してくれません。</p>
+<!-- <p>I think git could theoretically give you a more useful message like “is up to
+date with the origin’s <code>main</code> <strong>as of your last fetch 5 days ago</strong>” because the time
+that the most recent fetch happened is stored in the reflog, but it doesn’t.</p> -->
 
 <h3 id="head-head-head-head-head-2-head-2"><code>HEAD^</code>, <code>HEAD~</code> <code>HEAD^^</code>, <code>HEAD~~</code>, <code>HEAD^2</code>, <code>HEAD~2</code></h3>
 
-<p>I&rsquo;ve known for a long time that <code>HEAD^</code> refers to the previous commit, but I&rsquo;ve
-been confused for a long time about the difference between <code>HEAD~</code> and <code>HEAD^</code>.</p>
+<p>私って、<code>HEAD^</code> が直前の commit を参照するというのはずっと前から知っていますが、
+<code>HEAD~</code> と <code>HEAD^</code> の違いを分からないままでいるんですよね。</p>
+<!-- <p>I’ve known for a long time that <code>HEAD^</code> refers to the previous commit, but I’ve
+been confused for a long time about the difference between <code>HEAD~</code> and <code>HEAD^</code>.</p> -->
 
-<p>I looked it up, and here&rsquo;s how these relate to each other:</p>
+<p>調べた結果、それぞれのつながりは以下のとおりです:</p>
+<!-- <p>I looked it up, and here’s how these relate to each other:</p> -->
 
 <ul>
-<li><code>HEAD^</code> and <code>HEAD~</code> are the same thing (1 commit ago)</li>
-<li><code>HEAD^^^</code> and <code>HEAD~~~</code> and <code>HEAD~3</code> are the same thing (3 commits ago)</li>
-<li><code>HEAD^3</code> refers the the third parent of a commit, and is different from <code>HEAD~3</code></li>
+<li><code>HEAD^</code> と <code>HEAD~</code> は同じもの (1個前)</li>
+<!-- <li><code>HEAD^</code> and <code>HEAD~</code> are the same thing (1 commit ago)</li> -->
+<li><code>HEAD^^^</code> と <code>HEAD~~~</code> と <code>HEAD~3</code> は同じもの (3個前)</li>
+<!-- <li><code>HEAD^^^</code> and <code>HEAD~~~</code> and <code>HEAD~3</code> are the same thing (3 commits ago)</li> -->
+<li><code>HEAD^3</code> は 3つめの親を参照するので <code>HEAD~3</code> とは違う</li>
+<!-- <li><code>HEAD^3</code> refers the the third parent of a commit, and is different from <code>HEAD~3</code></li> -->
 </ul>
 
-<p>This seems weird &ndash; why are <code>HEAD~</code> and <code>HEAD^</code> the same thing? And what&rsquo;s the
-&ldquo;third parent&rdquo;? Is that the same thing as the parent&rsquo;s parent&rsquo;s parent? (spoiler: it
-isn&rsquo;t) Let&rsquo;s talk about it!</p>
+<p>おかしくないですか。どうして <code>HEAD~</code> と <code>HEAD^</code> が同じなんです？ そして
+「3つめの親」って何？ 親の親の親ってこと？ (ネタバレ: 違います)
+では解説していきましょう！</p>
+<!-- <p>This seems weird – why are <code>HEAD~</code> and <code>HEAD^</code> the same thing? And what’s the
+“third parent”? Is that the same thing as the parent’s parent’s parent? (spoiler: it
+isn’t) Let’s talk about it!</p> -->
 
-<p>Most commits have only one parent. But merge commits have multiple parents  &ndash;
-they&rsquo;re merging together 2 or more commits. In Git <code>HEAD^</code> means &ldquo;the parent of
-the HEAD commit&rdquo;. But what if HEAD is a merge commit? What does <code>HEAD^</code> refer
-to?</p>
+<p>ほとんどの commit には親がひとつだけあります。でもマージ commit には複数の親があります。
+複数の commit をマージするからです。さて、git の <code>HEAD^</code> は「HEAD commit の親」
+という意味ですが、では HEAD がマージ commit の場合はどうなるのでしょう？ <code>HEAD^</code>
+は何を指すのでしょうか。</p>
+<!-- <p>Most commits have only one parent. But merge commits have multiple parents  –
+they’re merging together 2 or more commits. In Git <code>HEAD^</code> means “the parent of
+the HEAD commit”. But what if HEAD is a merge commit? What does <code>HEAD^</code> refer
+to?</p> -->
 
-<p>The answer is that <code>HEAD^</code> refers to the the <strong>first</strong> parent of the merge,
-<code>HEAD^2</code> is the second parent, <code>HEAD^3</code> is the third parent, etc.</p>
+<p>答え。<code>HEAD^</code> が指すのはマージの<strong>最初の</strong>親で、
+<code>HEAD^2</code> は 2つめの親、<code>HEAD^3</code> は 3つめの親、以下略です。</p>
+<!-- <p>The answer is that <code>HEAD^</code> refers to the the <strong>first</strong> parent of the merge,
+<code>HEAD^2</code> is the second parent, <code>HEAD^3</code> is the third parent, etc.</p> -->
 
-<p>But I guess they also wanted a way to refer to &ldquo;3 commits ago&rdquo;, so <code>HEAD^3</code> is
-the third parent of the current commit (which may have many parents if it&rsquo;s a merge commit), and <code>HEAD~3</code> is the parent&rsquo;s parent&rsquo;s
-parent.</p>
+<p>でも「3つ前」を指す方法も欲しかったので、<code>HEAD^3</code> は 3つめの親にして、
+<code>HEAD~3</code> は親の親の親にしたんだと思います。</p>
+<!-- <p>But I guess they also wanted a way to refer to “3 commits ago”, so <code>HEAD^3</code> is
+the third parent of the current commit (which may have many parents if it’s a merge commit), and <code>HEAD~3</code> is the parent’s parent’s
+parent.</p> -->
 
-<p>I think in the context of the merge commit ours/theirs discussion earlier, <code>HEAD^</code> is &ldquo;ours&rdquo; and <code>HEAD^2</code> is &ldquo;theirs&rdquo;.</p>
+<p>先ほどの話におけるマージの ours/theirs に関連して言うと、<code>HEAD^</code> が「こっち (ours)」で <code>HEAD^2</code> が「あっち (theirs)」です。</p>
+<!-- <p>I think in the context of the merge commit ours/theirs discussion earlier, <code>HEAD^</code> is “ours” and <code>HEAD^2</code> is “theirs”.</p> -->
 
 <h3 id="and"><code>..</code> and <code>...</code></h3>
 
-<p>Here are two commands:</p>
+<p>こちらの 2つのコマンドを見てください:</p>
+<!-- <p>Here are two commands:</p> -->
 
 <ul>
 <li><code>git log main..test</code></li>
 <li><code>git log main...test</code></li>
 </ul>
 
-<p>What&rsquo;s the difference between <code>..</code> and <code>...</code>? I never use these so I had to look it up in <a href="https://git-scm.com/docs/git-range-diff">man git-range-diff</a>. It seems like the answer is that in this case:</p>
+<p>この <code>..</code> と <code>...</code> の違いは何でしょう？ 私はぜんぜん使っていないので、<a href="https://git-scm.com/docs/git-range-diff">man git-range-diff</a> で調べなくてはいけませんでした。この場合の答えは以下になるようです:</p>
+<!-- <p>What’s the difference between <code>..</code> and <code>...</code>? I never use these so I had to look it up in <a href="https://git-scm.com/docs/git-range-diff">man git-range-diff</a>. It seems like the answer is that in this case:</p> -->
 
 <pre><code>A - B main
   \ 
@@ -195,120 +288,159 @@ parent.</p>
 </code></pre>
 
 <ul>
-<li><code>main..test</code> is commits C and D</li>
-<li><code>test..main</code> is commit B</li>
-<li><code>main...test</code> is commits B, C, and D</li>
+<li><code>main..test</code> は C と D</li>
+<!-- <li><code>main..test</code> is commits C and D</li> -->
+<li><code>test..main</code> は B</li>
+<!-- <li><code>test..main</code> is commit B</li> -->
+<li><code>main...test</code> は B, C, D</li>
+<!-- <li><code>main...test</code> is commits B, C, and D</li> -->
 </ul>
 
-<p>But it gets worse: apparently <code>git diff</code> also supports <code>..</code> and <code>...</code>, but
-they do something completely different than they do with <code>git log</code>? I think the summary is:</p>
+<p>でも、これで終わりじゃありません。どうやら <code>git diff</code> も <code>..</code> と <code>...</code> を使える
+のですが、<code>git log</code> とはまったく違う動作をするようなのです！？ まとめるとこういう感じです:</p>
+<!-- <p>But it gets worse: apparently <code>git diff</code> also supports <code>..</code> and <code>...</code>, but
+they do something completely different than they do with <code>git log</code>? I think the summary is:</p> -->
 
 <ul>
-<li><code>git log test..main</code> shows changes on <code>main</code> that aren&rsquo;t on <code>test</code>, whereas <code>git log test...main</code> shows changes on <em>both</em> sides.</li>
-<li><code>git diff test..main</code> shows <code>test</code> changes <em>and</em> <code>main</code> changes (it diffs <code>B</code> and <code>D</code>) whereas <code>git diff test...main</code> diffs <code>A</code> and <code>D</code> (it only shows you the diff on one side).</li>
+<li><code>git log test..main</code> は <code>main</code> 上の変更のうち <code>test</code> にないものを表示し、<code>git log test...main</code> は<em>両方</em>からの変更点を表示します。</li>
+<!-- <li><code>git log test..main</code> shows changes on <code>main</code> that aren’t on <code>test</code>, whereas <code>git log test...main</code> shows changes on <em>both</em> sides.</li> -->
+<li><code>git diff test..main</code> は <code>test</code> 側の変更<em>および</em> <code>main</code> 側の変更 (<code>B</code> と <code>D</code> の diff) を表示し、<code>git diff test...main</code> は <code>A</code> と <code>D</code> の diff (片側の変更だけ) を表示します。</li>
+<!-- <li><code>git diff test..main</code> shows <code>test</code> changes <em>and</em> <code>main</code> changes (it diffs <code>B</code> and <code>D</code>) whereas <code>git diff test...main</code> diffs <code>A</code> and <code>D</code> (it only shows you the diff on one side).</li> -->
 </ul>
 
 <p><a href="https://matthew-brett.github.io/pydagogue/pain_in_dots.html">this blog post</a> talks about it a bit more.</p>
 
-<h3 id="can-be-fast-forwarded">&ldquo;can be fast-forwarded&rdquo;</h3>
+<h3 id="can-be-fast-forwarded">“can be fast-forwarded”</h3>
 
-<p>Here&rsquo;s a very common message you&rsquo;ll see in <code>git status</code>:</p>
+<p>次は、<code>git status</code> するとよく見るメッセージです:</p>
+<!-- <p>Here’s a very common message you’ll see in <code>git status</code>:</p> -->
 
 <pre><code>$ git status
 On branch main
 Your branch is behind 'origin/main' by 2 commits, and can be fast-forwarded.
-  (use &quot;git pull&quot; to update your local branch)
+  (use "git pull" to update your local branch)
 </code></pre>
 
-<p>What does &ldquo;fast-forwarded&rdquo; mean? Basically it&rsquo;s trying to say that the two branches look something like this: (newest commits are on the right)</p>
+<p>この fast-forward ってどういうことでしょう？ 基本的には二つのブランチがこんな感じになっているということです: (右にいくほど新しい)</p>
+<!-- <p>What does “fast-forwarded” mean? Basically it’s trying to say that the two branches look something like this: (newest commits are on the right)</p> -->
 
 <pre><code>main:        A - B - C
 origin/main: A - B - C - D - E
 </code></pre>
 
-<p>or visualized another way:</p>
+<p>別の描き方ではこうです:</p>
+<!-- <p>or visualized another way:</p> -->
 
 <pre><code>A - B - C - D - E (origin/main)
         |
        main
 </code></pre>
 
-<p>Here <code>origin/main</code> just has 2 extra commits that <code>main</code> doesn&rsquo;t have, so it&rsquo;s
-easy to bring <code>main</code> up to date &ndash; we just need to add those 2 commits.
-Literally nothing can possibly go wrong &ndash; there&rsquo;s no possibility of merge
-conflicts. A fast forward merge is a very good thing! It&rsquo;s the easiest way to combine 2 branches.</p>
+<p>こちらの <code>origin/main</code> は <code>main</code> にない commit だけを 2つ持っていますので、
+<code>main</code> を最新にするのは簡単です。その 2つの commit を追加すればいいだけです。
+文字どおり失敗の余地などありません。マージ・コンフリクトの可能性はゼロです。
+早送り (fast forward) マージは最高です！ 2 つのブランチをつなげる、いちばん簡単な方法です。</p>
+<!-- <p>Here <code>origin/main</code> just has 2 extra commits that <code>main</code> doesn’t have, so it’s
+easy to bring <code>main</code> up to date – we just need to add those 2 commits.
+Literally nothing can possibly go wrong – there’s no possibility of merge
+conflicts. A fast forward merge is a very good thing! It’s the easiest way to combine 2 branches.</p> -->
 
-<p>After running <code>git pull</code>, you&rsquo;ll end up this state:</p>
+<p>ここで <code>git pull</code> すると、こういう状態になります:</p>
+<!-- <p>After running <code>git pull</code>, you’ll end up this state:</p> -->
 
 <pre><code>main:        A - B - C - D - E
 origin/main: A - B - C - D - E
 </code></pre>
 
-<p>Here&rsquo;s an example of a state which <strong>can&rsquo;t</strong> be fast-forwarded.</p>
+<p>ではここで fast-forward が<strong>不可能な</strong>状態の例を見てみましょう。</p>
+<!-- <p>Here’s an example of a state which <strong>can’t</strong> be fast-forwarded.</p> -->
 
 <pre><code>             A - B - C - X  (main)
                      |
                      - - D - E  (origin/main)
 </code></pre>
 
-<p>Here <code>main</code> has a commit that <code>origin/main</code> doesn&rsquo;t have (<code>X</code>). So
-you can&rsquo;t do a fast forward. In that case, <code>git status</code> would say:</p>
+<p>この <code>main</code> には、<code>origin/main</code> にない <code>X</code> という commit があります。
+そのため fast-forward ができません。こういう場合 <code>git status</code> はこうなります:</p>
+<!-- <p>Here <code>main</code> has a commit that <code>origin/main</code> doesn’t have (<code>X</code>). So
+you can’t do a fast forward. In that case, <code>git status</code> would say:</p> -->
 
 <pre><code>$ git status
 Your branch and 'origin/main' have diverged,
 and have 1 and 2 different commits each, respectively.
 </code></pre>
 
-<h3 id="reference-symbolic-reference">&ldquo;reference&rdquo;, &ldquo;symbolic reference&rdquo;</h3>
+<h3 id="reference-symbolic-reference">“reference”, “symbolic reference”</h3>
 
-<p>I&rsquo;ve always found the term &ldquo;reference&rdquo; kind of confusing. There are at least 3 things that get called &ldquo;references&rdquo; in git</p>
+<p>いつも思うんですけど、参照 (reference) っていう用語は少し分かりにくいですよね。少なくとも 3 つのものが git で reference と呼ばれます。</p>
+<!-- <p>I’ve always found the term “reference” kind of confusing. There are at least 3 things that get called “references” in git</p> -->
 
 <ul>
-<li>branches and tags like <code>main</code> and <code>v0.2</code></li>
-<li><code>HEAD</code>, which is the current branch</li>
-<li>things like <code>HEAD^^^</code> which git will resolve to a commit ID. Technically these are probably not &ldquo;references&rdquo;, I guess git <a href="https://git-scm.com/docs/revisions">calls them</a> &ldquo;revision parameters&rdquo; but I&rsquo;ve never used that term.</li>
+<li>ブランチやタグ、たとえば <code>main</code> とか <code>v0.2</code></li>
+<!-- <li>branches and tags like <code>main</code> and <code>v0.2</code></li> -->
+<li><code>HEAD</code> これは現ブランチのこと</li>
+<!-- <li><code>HEAD</code>, which is the current branch</li> -->
+<li>git が何らかの commit ID に解釈する <code>HEAD^^^</code> のようなもの、これは技術的には reference ではなくて、git はこれのことを revision parameters と<a href="https://git-scm.com/docs/revisions">呼んでいます</a>が、私としてはその用語を使ったことがありません</li>
+<!-- <li>things like <code>HEAD^^^</code> which git will resolve to a commit ID. Technically these are probably not “references”, I guess git <a href="https://git-scm.com/docs/revisions">calls them</a> “revision parameters” but I’ve never used that term.</li> -->
 </ul>
 
-<p>&ldquo;symbolic reference&rdquo; is a very weird term to me because personally I think the only
-symbolic reference I&rsquo;ve ever used is <code>HEAD</code> (the current branch), and <code>HEAD</code>
-has a very central place in git (most of git&rsquo;s core commands&rsquo; behaviour depends
-on the value of <code>HEAD</code>), so I&rsquo;m not sure what the point of having it as a
-generic concept is.</p>
+<p>symbolic reference というのも実に奇妙な用語に感じます。というのも個人的に私が使ったことのある唯一の
+symbolic reference は <code>HEAD</code> (現ブランチですね) で、<code>HEAD</code>
+は git のまさに中心を占めている (git の主要コマンドの大多数は
+<code>HEAD</code> の値で動作が変わる) ので、どうしてこれを一般論的な概念として扱うのか、
+何の意味があるのか分かりません。</p>
+<!-- <p>“symbolic reference” is a very weird term to me because personally I think the only
+symbolic reference I’ve ever used is <code>HEAD</code> (the current branch), and <code>HEAD</code>
+has a very central place in git (most of git’s core commands’ behaviour depends
+on the value of <code>HEAD</code>), so I’m not sure what the point of having it as a
+generic concept is.</p> -->
 
 <h3 id="refspecs">refspecs</h3>
 
-<p>When you configure a git remote in <code>.git/config</code>, there&rsquo;s this <code>+refs/heads/main:refs/remotes/origin/main</code> thing.</p>
+<p>git remote を設定すると <code>.git/config</code> にはこんな <code>+refs/heads/main:refs/remotes/origin/main</code> みたいなのができます。</p>
+<!-- <p>When you configure a git remote in <code>.git/config</code>, there’s this <code>+refs/heads/main:refs/remotes/origin/main</code> thing.</p> -->
 
-<pre><code>[remote &quot;origin&quot;]
+<pre><code>[remote "origin"]
 	url = git@github.com:jvns/pandas-cookbook
 	fetch = +refs/heads/main:refs/remotes/origin/main
 </code></pre>
 
-<p>I don&rsquo;t really know what this means, I&rsquo;ve always just used whatever the default
-is when you do a <code>git clone</code> or <code>git remote add</code>, and I&rsquo;ve never felt any
-motivation to learn about it or change it from the default.</p>
+<p>私も本当にこれがどういう意味なのか分かってなくて、いつも <code>git clone</code> とか
+<code>git remote add</code> したときのデフォルトを気にせず使ってきましたし、調べたり
+変更したりする気はこれまで少しも起こりませんでした。</p>
+<!-- <p>I don’t really know what this means, I’ve always just used whatever the default
+is when you do a <code>git clone</code> or <code>git remote add</code>, and I’ve never felt any
+motivation to learn about it or change it from the default.</p> -->
 
-<h3 id="tree-ish">&ldquo;tree-ish&rdquo;</h3>
+<h3 id="tree-ish">“tree-ish”</h3>
 
-<p>The man page for <code>git checkout</code> says:</p>
+<p>man によると <code>git checkout</code> の引数はこうです:</p>
+<!-- <p>The man page for <code>git checkout</code> says:</p> -->
 
 <pre><code> git checkout [-f|--ours|--theirs|-m|--conflict=&lt;style&gt;] [&lt;tree-ish&gt;] [--] &lt;pathspec&gt;...
 </code></pre>
 
-<p>What&rsquo;s <code>tree-ish</code>??? What git is trying to say here is when you run <code>git checkout THING .</code>, <code>THING</code> can be either:</p>
+<p>何ですか、この <code>tree-ish</code> って？？？ ここで git が言わんとしているのは、<code>git checkout THING .</code> を実行するとき <code>THING</code> は次のどれでもいいということです:</p>
+<!-- <p>What’s <code>tree-ish</code>??? What git is trying to say here is when you run <code>git checkout THING .</code>, <code>THING</code> can be either:</p> -->
 
 <ul>
-<li>a commit ID (like <code>182cd3f</code>)</li>
-<li>a reference to a commit ID (like <code>main</code> or <code>HEAD^^</code> or <code>v0.3.2</code>)</li>
-<li>a subdirectory <strong>inside</strong> a commit (like <code>main:./docs</code>)</li>
-<li>I think that&rsquo;s it????</li>
+<li>commit ID (たとえば <code>182cd3f</code>)</li>
+<!-- <li>a commit ID (like <code>182cd3f</code>)</li> -->
+<li>commit ID への参照 (たとえば <code>main</code> や <code>HEAD^^</code> や <code>v0.3.2</code>)</li>
+<!-- <li>a reference to a commit ID (like <code>main</code> or <code>HEAD^^</code> or <code>v0.3.2</code>)</li> -->
+<li>commit <strong>内の</strong>サブディレクトリ (たとえば <code>main:./docs</code>)</li>
+<!-- <li>a subdirectory <strong>inside</strong> a commit (like <code>main:./docs</code>)</li> -->
+<li>以上！ たぶん！ きっと？</li>
+<!-- <li>I think that’s it????</li> -->
 </ul>
 
-<p>Personally I&rsquo;ve never used the &ldquo;directory inside a commit&rdquo; thing and from my perspective &ldquo;tree-ish&rdquo; might as well just mean &ldquo;commit or reference to commit&rdquo;.</p>
+<p>私個人としては「commit の中のディレクトリ」なんて使ったことはありませんし、tree-ish というのも実質「commit かその参照」っていう意味でしかないと思いますけど。</p>
+<!-- <p>Personally I’ve never used the “directory inside a commit” thing and from my perspective “tree-ish” might as well just mean “commit or reference to commit”.</p> -->
 
-<h3 id="index-staged-cached">&ldquo;index&rdquo;, &ldquo;staged&rdquo;, &ldquo;cached&rdquo;</h3>
+<h3 id="index-staged-cached">“index”, “staged”, “cached”</h3>
 
-<p>All of these refer to the exact same thing (the file <code>.git/index</code>, which is where your changes are staged when you run <code>git add</code>):</p>
+<p>この 3 つは全部まったく同じものを指します (<code>.git/index</code> というファイルで、これは <code>git add</code> すると変更が stage される場所です):</p>
+<!-- <p>All of these refer to the exact same thing (the file <code>.git/index</code>, which is where your changes are staged when you run <code>git add</code>):</p> -->
 
 <ul>
 <li><code>git diff --cached</code></li>
@@ -317,143 +449,218 @@ motivation to learn about it or change it from the default.</p>
 <li>the file <code>.git/index</code></li>
 </ul>
 
-<p>Even though they all ultimately refer to the same file, there&rsquo;s some variation in how those terms are used in practice:</p>
+<p>突き詰めると同じファイルを指すとはいえ、これらの用語が実際の場面でどう使われるかには幅があります:</p>
+<!-- <p>Even though they all ultimately refer to the same file, there’s some variation in how those terms are used in practice:</p> -->
 
 <ul>
-<li>Apparently the flags <code>--index</code> and <code>--cached</code> do not generally mean the same
-thing. I have personally never used the <code>--index</code> flag so I&rsquo;m not
+<li>見るからに <code>--index</code> と <code>--cached</code> というフラグは概して同じ意味ではありませんね。
+私個人としては <code>--index</code> フラグを使ってきていないので深入りはしません
+が、git のリード・メンテナである <a href="https://gitster.livejournal.com/39629.html">Junio Hamano によるブログ記事</a>はそのゴワゴワした違いを詳しく解説しています。</li>
+<!-- <li>Apparently the flags <code>--index</code> and <code>--cached</code> do not generally mean the same
+thing. I have personally never used the <code>--index</code> flag so I’m not
 going to get into it, but <a href="https://gitster.livejournal.com/39629.html">this blog post by Junio
-Hamano</a> (git&rsquo;s lead maintainer)
-explains all the gnarly details</li>
-<li>the &ldquo;index&rdquo; lists untracked files (I guess for performance reasons) but you don&rsquo;t usually think of the &ldquo;staging area&rdquo; as including untracked files&rdquo;</li>
+Hamano</a> (git’s lead maintainer)
+explains all the gnarly details</li> -->
+<li>index には untracked なファイルも載っています (速度上の理由かな) けど、staging area と言うときには普通、そういう untracked なファイルを含まないものとします。</li>
+<!-- <li>the “index” lists untracked files (I guess for performance reasons) but you don’t usually think of the “staging area” as including untracked files”</li> -->
 </ul>
 
-<h3 id="reset-revert-restore">&ldquo;reset&rdquo;, &ldquo;revert&rdquo;, &ldquo;restore&rdquo;</h3>
+<h3 id="reset-revert-restore">“reset”, “revert”, “restore”</h3>
 
-<p>A bunch of people mentioned that &ldquo;reset&rdquo;, &ldquo;revert&rdquo; and &ldquo;restore&rdquo; are very
-similar words and it&rsquo;s hard to differentiate them.</p>
+<p>めちゃくちゃ多かった意見ですが、reset と revert と restore がすごく
+似てる言葉なので区別しにくいらしいです。</p>
+<!-- <p>A bunch of people mentioned that “reset”, “revert” and “restore” are very
+similar words and it’s hard to differentiate them.</p> -->
 
-<p>I think it&rsquo;s made worse because</p>
+<p>もっと面倒なことに、</p>
+<!-- <p>I think it’s made worse because</p> -->
 
 <ul>
-<li><code>git reset --hard</code> and <code>git restore .</code> on their own do basically the same thing. (though <code>git reset --hard COMMIT</code> and <code>git restore --source COMMIT .</code> are completely different from each other)</li>
-<li>the respective man pages don&rsquo;t give very helpful descriptions:
+<li><code>git reset --hard</code> と <code>git restore .</code> は追加の引数がなければ基本的に同じことです。(ただし <code>git reset --hard COMMIT</code> と <code>git restore --source COMMIT .</code> はまったく別物ですけど)</li>
+<!-- <li><code>git reset --hard</code> and <code>git restore .</code> on their own do basically the same thing. (though <code>git reset --hard COMMIT</code> and <code>git restore --source COMMIT .</code> are completely different from each other)</li> -->
+<li>それぞれの man ページを見ても、あまりよく分かりません:
+<!-- <li>the respective man pages don’t give very helpful descriptions: -->
 
 <ul>
-<li><code>git reset</code>: &ldquo;Reset current HEAD to the specified state&rdquo;</li>
-<li><code>git revert</code>: &ldquo;Revert some existing commits&rdquo;</li>
-<li><code>git restore</code>: &ldquo;Restore working tree files&rdquo;</li>
+<li><code>git reset</code>: 現在の HEAD を特定の状態にリセットする</li>
+<!-- <li><code>git reset</code>: “Reset current HEAD to the specified state”</li> -->
+<li><code>git revert</code>: 既存の commit を取り消す</li>
+<!-- <li><code>git revert</code>: “Revert some existing commits”</li> -->
+<li><code>git restore</code>: ワーキング・ツリーのファイルを復元する</li>
+<!-- <li><code>git restore</code>: “Restore working tree files”</li> -->
 </ul></li>
 </ul>
 
-<p>Those short descriptions do give you a better sense for which noun is being
-affected (&ldquo;current HEAD&rdquo;, &ldquo;some commits&rdquo;, &ldquo;working tree files&rdquo;) but they assume
-you know what &ldquo;reset&rdquo;, &ldquo;revert&rdquo; and &ldquo;restore&rdquo; mean in this context.</p>
+<p>これらの概略は確かに目的語が分かる (「現 HEAD」や「既存 commit」や
+「ワーキング・ツリーのファイル」) という意味で情報がゼロではありませんが、
+「リセット」「取り消し」「復元」がここで何を意味するのかは教えてくれません。</p>
+<!-- <p>Those short descriptions do give you a better sense for which noun is being
+affected (“current HEAD”, “some commits”, “working tree files”) but they assume
+you know what “reset”, “revert” and “restore” mean in this context.</p> -->
 
-<p>Here are some short descriptions of what they each do:</p>
+<p>以下はそれぞれの動作を一言で表したものです:</p>
+<!-- <p>Here are some short descriptions of what they each do:</p> -->
 
 <ul>
-<li><code>git revert COMMIT</code>: Create a new commit that&rsquo;s the &ldquo;opposite&rdquo; of COMMIT on your current branch (if COMMIT added 3 lines, the new commit will delete those 3 lines)</li>
-<li><code>git reset --hard COMMIT</code>: Force your current branch back to the state it was at <code>COMMIT</code>, erasing any new changes since <code>COMMIT</code>. Very dangerous operation.</li>
-<li><code>git restore --source=COMMIT PATH</code>: Take all the files in <code>PATH</code> back to how they were at <code>COMMIT</code>, without changing any other files or commit history.</li>
+<li><code>git revert COMMIT</code>: 現ブランチに COMMIT の「逆」な commit を新しく作成する (たとえば COMMIT が 3行追加なら、新 commit はその 3行を削除)</li>
+<!-- <li><code>git revert COMMIT</code>: Create a new commit that’s the “opposite” of COMMIT on your current branch (if COMMIT added 3 lines, the new commit will delete those 3 lines)</li> -->
+<li><code>git reset --hard COMMIT</code>: 現ブランチを <code>COMMIT</code> の時点まで戻す、そのために <code>COMMIT</code> 以降の変更を消去する (非常に危険な操作です)</li>
+<!-- <li><code>git reset --hard COMMIT</code>: Force your current branch back to the state it was at <code>COMMIT</code>, erasing any new changes since <code>COMMIT</code>. Very dangerous operation.</li> -->
+<li><code>git restore --source=COMMIT PATH</code>: 引数 <code>PATH</code> 内の全ファイルを <code>COMMIT</code> 時点まで戻すが、他のファイルや commit 履歴は変更しない</li>
+<!-- <li><code>git restore --source=COMMIT PATH</code>: Take all the files in <code>PATH</code> back to how they were at <code>COMMIT</code>, without changing any other files or commit history.</li> -->
 </ul>
 
-<h3 id="untracked-files-remote-tracking-branch-track-remote-branch">&ldquo;untracked files&rdquo;, &ldquo;remote-tracking branch&rdquo;, &ldquo;track remote branch&rdquo;</h3>
+<h3 id="untracked-files-remote-tracking-branch-track-remote-branch">“untracked files”, “remote-tracking branch”, “track remote branch”</h3>
 
-<p>Git uses the word &ldquo;track&rdquo; in 3 different related ways:</p>
+<p>git は追跡 (track) という単語を 3 つの (関連するけど別々の) 意味で使っています:</p>
+<!-- <p>Git uses the word “track” in 3 different related ways:</p> -->
 
 <ul>
-<li><code>Untracked files:</code> in the output of <code>git status</code>. This means those files aren&rsquo;t managed by Git and won&rsquo;t be included in commits.</li>
-<li>a &ldquo;remote tracking branch&rdquo; like <code>origin/main</code>. This is a local reference, and it&rsquo;s the commit ID that <code>main</code> pointed to on the remote <code>origin</code> the last time you ran <code>git pull</code> or <code>git fetch</code>.</li>
+<li><code>git status</code> の出力にある <code>Untracked files:</code>。これはファイルが git によって管理されておらず、commit に含まれないということを意味します。</li>
+<!-- <li><code>Untracked files:</code> in the output of <code>git status</code>. This means those files aren’t managed by Git and won’t be included in commits.</li> -->
+<li><code>origin/main</code> といった remote tracking branch。これは自分の手元からの参照であり、直近の <code>git pull</code> や <code>git fetch</code> 時点でリモート <code>origin</code> の <code>main</code> が指していた commit ID です。(過去形)</li>
+<!-- <li>a “remote tracking branch” like <code>origin/main</code>. This is a local reference, and it’s the commit ID that <code>main</code> pointed to on the remote <code>origin</code> the last time you ran <code>git pull</code> or <code>git fetch</code>.</li> -->
 <li>“branch foo set up to <strong>track</strong> remote branch bar from origin”</li>
 </ul>
 
-<p>The &ldquo;untracked files&rdquo; and &ldquo;remote tracking branch&rdquo; thing is not too bad &ndash; they
-both use &ldquo;track&rdquo;, but the context is very different. No big deal. But I think
-the other two uses of &ldquo;track&rdquo; are actually quite confusing:</p>
+<p>untracked files と remote tracking branch ってやつはそこまで悪くないです。
+どちらも track と言ってますが文脈がだいぶ違いますから。騒ぐほどのことではありません。
+でも後半 2つの track はかなりまぎらわしいです:</p>
+<!-- <p>The “untracked files” and “remote tracking branch” thing is not too bad – they
+both use “track”, but the context is very different. No big deal. But I think
+the other two uses of “track” are actually quite confusing:</p> -->
 
 <ul>
-<li><code>main</code> is a branch that tracks a remote</li>
-<li><code>origin/main</code> is a remote-tracking branch</li>
+<li><code>main</code> はリモートを track するブランチ</li>
+<!-- <li><code>main</code> is a branch that tracks a remote</li> -->
+<li><code>origin/main</code> は remote-tracking branch</li>
+<!-- <li><code>origin/main</code> is a remote-tracking branch</li> -->
 </ul>
 
-<p>But a &ldquo;branch that tracks a remote&rdquo; and a &ldquo;remote-tracking branch&rdquo; are
-different things in Git and the distinction is pretty important! Here&rsquo;s a quick
-summary of the differences:</p>
+<p>とはいえ「リモートを track するブランチ」と「remote-tracking なブランチ」は
+git において別の物ですし、その区別はめちゃくちゃ大事です！ その違いを
+簡単にまとめました:</p>
+<!-- <p>But a “branch that tracks a remote” and a “remote-tracking branch” are
+different things in Git and the distinction is pretty important! Here’s a quick
+summary of the differences:</p> -->
 
 <ul>
-<li><code>main</code> is a branch. You can make commits to it, merge into it, etc. It&rsquo;s often configured to &ldquo;track&rdquo; the remote <code>main</code> in <code>.git/config</code>, which means that you can use <code>git pull</code> and <code>git push</code> to push/pull changes.</li>
-<li><code>origin/main</code> is not a branch. It&rsquo;s a &ldquo;remote-tracking branch&rdquo;, which is not
-a kind of branch (I&rsquo;m sorry). You <strong>can&rsquo;t</strong> make commits to it. The only way
+<li><code>main</code> はブランチです。そこに commit や merge ができます。それはしばしばリモートの <code>main</code> を追跡 (track) するよう <code>.git/config</code> で設定されており、それにより <code>git pull</code> や <code>git push</code> が変更を push/pull できます。</li>
+<!-- <li><code>main</code> is a branch. You can make commits to it, merge into it, etc. It’s often configured to “track” the remote <code>main</code> in <code>.git/config</code>, which means that you can use <code>git pull</code> and <code>git push</code> to push/pull changes.</li> -->
+<li><code>origin/main</code> はブランチではありません。それは飽くまで「remote-tracking branch」であり、
+普通のブランチの一種ではないのです。そこに commit することは<strong>できません</strong>。
+これを変更するには <code>git pull</code> や <code>git fetch</code> を実行してリモートから
+<code>main</code> に最新状態を取り入れるしかありません。</li>
+<!-- <li><code>origin/main</code> is not a branch. It’s a “remote-tracking branch”, which is not
+a kind of branch (I’m sorry). You <strong>can’t</strong> make commits to it. The only way
 you can update it is by running <code>git pull</code> or <code>git fetch</code> to get the latest
-state of <code>main</code> from the remote.</li>
+state of <code>main</code> from the remote.</li> -->
 </ul>
 
-<p>I&rsquo;d never really thought about this ambiguity before but I think it&rsquo;s pretty
-easy to see why folks are confused by it.</p>
+<p>言われるまで私は本当にこの曖昧さについて考えたことがなかったのですが、言われてみれば
+みんなが混乱させられているのも納得です。
+</p>
+<!-- <p>I’d never really thought about this ambiguity before but I think it’s pretty
+easy to see why folks are confused by it.</p> -->
 
 <h3 id="checkout">checkout</h3>
 
-<p>Checkout does two totally unrelated things:</p>
+<p>checkout には、まったく無関係な 2つの役割があります:</p>
+<!-- <p>Checkout does two totally unrelated things:</p> -->
 
 <ul>
-<li><code>git checkout BRANCH</code> switches branches</li>
-<li><code>git checkout file.txt</code> discards your unstaged changes to <code>file.txt</code></li>
+<li><code>git checkout BRANCH</code> はブランチを切り替える</li>
+<!-- <li><code>git checkout BRANCH</code> switches branches</li> -->
+<li><code>git checkout file.txt</code> は、<code>file.txt</code> への未 staging な変更を捨てます</li>
+<!-- <li><code>git checkout file.txt</code> discards your unstaged changes to <code>file.txt</code></li> -->
 </ul>
 
-<p>This is well known to be confusing and git has actually split those two
+<p>これは分かりにくくて有名で、実際 git はこの 2つの機能を
+<code>git switch</code> と <code>git restore</code> に分割しました (とはいえ今でも
+checkout を使うことはできますので、私のように 15 年で指が覚えてしまって <code>git checkout</code>
+以外の方法を覚える気になれない人も大丈夫です)</p>
+<!-- <p>This is well known to be confusing and git has actually split those two
 functions into <code>git switch</code> and <code>git restore</code> (though you can still use
 checkout if, like me, you have 15 years of muscle memory around <code>git checkout</code>
-that you don&rsquo;t feel like unlearning)</p>
+that you don’t feel like unlearning)</p> -->
 
-<p>Also personally after 15 years I still can&rsquo;t remember the order of the
+<p>なお、私の場合は 15 年たっても引数の順番を覚えられないのですが、
+<code>git checkout main file.txt</code> で
+<code>file.txt</code> を <code>main</code> ブランチ版に戻せます。</p>
+<!-- <p>Also personally after 15 years I still can’t remember the order of the
 arguments to <code>git checkout main file.txt</code> for restoring the version of
-<code>file.txt</code> from the <code>main</code> branch.</p>
+<code>file.txt</code> from the <code>main</code> branch.</p> -->
 
-<p>I think sometimes you need to pass <code>--</code> to <code>checkout</code> as an argument somewhere
+<p>どの引数がブランチでどこからがファイルパスなのか教えるために <code>--</code> を <code>checkout</code>
+の引数として渡す必要がある場合もあるらしいのですが、私は
+そういうことをしていませんので、どういうとき必要なのかイマイチ分かってません。</p>
+<!-- <p>I think sometimes you need to pass <code>--</code> to <code>checkout</code> as an argument somewhere
 to help it figure out which argument is a branch and which ones are paths but I
-never do that and I&rsquo;m not sure when it&rsquo;s needed.</p>
+never do that and I’m not sure when it’s needed.</p> -->
 
 <h3 id="reflog">reflog</h3>
 
-<p>Lots of people mentioning reading reflog as <code>re-flog</code> and not <code>ref-log</code>. I
-won&rsquo;t get deep into the reflog here because this post is REALLY long but:</p>
+<p>大勢の人は reflog が <code>ref-log</code> ではなく <code>re-flog</code> (また叩き出す？) と読めてしまうと
+言っています。この記事はものすっごく長くなってるので深くは掘り下げませんが、</p>
+<!-- <p>Lots of people mentioning reading reflog as <code>re-flog</code> and not <code>ref-log</code>. I
+won’t get deep into the reflog here because this post is REALLY long but:</p> -->
 
 <ul>
-<li>&ldquo;reference&rdquo; is an umbrella term git uses for branches, tags, and HEAD</li>
-<li>the reference log (&ldquo;reflog&rdquo;) gives you the history of everything a reference has ever pointed to</li>
-<li>It can help get you out of some VERY bad git situations, like if you accidentally delete an important branch</li>
-<li>I find it one of the most confusing parts of git&rsquo;s UI and I try to avoid
-needing to use it.</li>
+<li>refefence は git がブランチ、タグ、HEAD をまとめて呼ぶ幅の広い用語です。</li>
+<!-- <li>“reference” is an umbrella term git uses for branches, tags, and HEAD</li> -->
+<li>reference log (略して reflog) は、ある reference がそれまでに指してきたものすべての履歴をくれるものです。</li>
+<!-- <li>the reference log (“reflog”) gives you the history of everything a reference has ever pointed to</li> -->
+<li>これは git の最悪な状況から救い出してくれることがあります。うっかり大事なブランチを削除してしまったりとかです。</li>
+<!-- <li>It can help get you out of some VERY bad git situations, like if you accidentally delete an important branch</li> -->
+<li>でも git の UI の中でも最上級に分かりにくい部分だと思うので、私はこれを使わないで済むよう心掛けています。</li>
+<!-- <li>I find it one of the most confusing parts of git’s UI and I try to avoid
+needing to use it.</li> -->
 </ul>
 
 <h3 id="merge-vs-rebase-vs-cherry-pick">merge vs rebase vs cherry-pick</h3>
 
-<p>A bunch of people mentioned being confused about the difference between merge
-and rebase and not understanding what the &ldquo;base&rdquo; in rebase was supposed to be.</p>
+<p>けっこうな人数が混乱したと言ってくれたのは merge
+と rebase の違いで、あとは rebase の base が何のことか分からないとかです。</p>
+<!-- <p>A bunch of people mentioned being confused about the difference between merge
+and rebase and not understanding what the “base” in rebase was supposed to be.</p> -->
 
-<p>I&rsquo;ll try to summarize them very briefly here, but I don&rsquo;t think these 1-line
+<p>ごく短くまとめるつもりですが、こういう 1行まとめはあまり役に立たないと思います。
+みんな自分の merge/rebase ワークフローを様々なやり方で構築しているので、
+本当に merge/rebase を理解するにはそのワークフローをまず理解しなければいけないからです。
+それに、図解がいいです。そういうのは別の記事をひとつ使うのがいいかもなので、
+今回はそこまでやりません。</p>
+<!-- <p>I’ll try to summarize them very briefly here, but I don’t think these 1-line
 explanations are that useful because people structure their workflows around
 merge / rebase in pretty different ways and to really understand merge/rebase
 you need to understand the workflows. Also pictures really help. That could
-really be its whole own blog post though so I&rsquo;m not going to get into it.</p>
+really be its whole own blog post though so I’m not going to get into it.</p> -->
 
 <ul>
-<li>merge creates a single new commit that merges the 2 branches</li>
-<li>rebase copies commits on the current branch to the target branch, one at a time.</li>
-<li>cherry-pick is similar to rebase, but with a totally different syntax (one
+<li>merge は 2 つのブランチをまとめる新規 commit を 1 つ発行します。</li>
+<!-- <li>merge creates a single new commit that merges the 2 branches</li> -->
+<li>rebase は現ブランチ上の commit を対象のブランチに 1つずつコピーしていきます。</li>
+<!-- <li>rebase copies commits on the current branch to the target branch, one at a time.</li> -->
+<li>cherry-pick は rebase に似ていますが、文法は完全に異なります
+(ひとつの大きな違いは、rebase が現ブランチ「から」コピーするのに対し、
+cherry-pick は現ブランチ「に」コピーするところです)</li>
+<!-- <li>cherry-pick is similar to rebase, but with a totally different syntax (one
 big difference is that rebase copies commits FROM the current branch,
-cherry-pick copies commits TO the current branch)</li>
+cherry-pick copies commits TO the current branch)</li> -->
 </ul>
 
 <h3 id="rebase-onto"><code>rebase --onto</code></h3>
 
-<p><code>git rebase</code> has an flag called <code>onto</code>. This has always seemed confusing to me
+<p><code>git rebase</code> には <code>--onto</code> というフラグがあります。これはずっと不思議でした。
+だって <code>git rebase main</code> がすることは現ブランチを <strong>onto</strong> main で
+(main <strong>上に</strong>) rebase することですから、わざわざ <code>onto</code> を付ける意味って？</p>
+<!-- <p><code>git rebase</code> has an flag called <code>onto</code>. This has always seemed confusing to me
 because the whole point of <code>git rebase main</code> is to rebase the current branch
-<strong>onto</strong> main. So what&rsquo;s the extra <code>onto</code> argument about?</p>
+<strong>onto</strong> main. So what’s the extra <code>onto</code> argument about?</p> -->
 
-<p>I looked it up, and <code>--onto</code> definitely solves a problem that I&rsquo;ve rarely/never
-actually had, but I guess I&rsquo;ll write down my understanding of it anyway.</p>
+<p>調べました。<code>--onto</code> が解決する問題は、私がめったに (一度も？) 出会ったことのない問題
+でした。でもとりあえず分かったことを書いてみます。</p>
+<!-- <p>I looked it up, and <code>--onto</code> definitely solves a problem that I’ve rarely/never
+actually had, but I guess I’ll write down my understanding of it anyway.</p> -->
 
 <pre><code>A - B - C (main)
      \
@@ -462,123 +669,176 @@ actually had, but I guess I&rsquo;ll write down my understanding of it anyway.</
           otherbranch
 </code></pre>
 
-<p>Imagine that for some reason I just want to move commits <code>F</code> and <code>G</code> to be
-rebased on top of <code>main</code>. I think there&rsquo;s probably some git workflow where this
-comes up a lot.</p>
+<p>何かの事情で <code>F</code> と <code>G</code> の commit を <code>main</code> 上に rebase したくなった
+とします。こういうことが頻繁に起こるワークフローも、きっとあると思います。</p>
+<!-- <p>Imagine that for some reason I just want to move commits <code>F</code> and <code>G</code> to be
+rebased on top of <code>main</code>. I think there’s probably some git workflow where this
+comes up a lot.</p> -->
 
-<p>Apparently you can run <code>git rebase --onto main otherbranch mybranch</code> to do
+<p>どうやら <code>git rebase --onto main otherbranch mybranch</code> でできるらしいです。
+私の場合この文法を暗記するのは不可能でしょう (3 個もブランチ名が出てくるので私には多すぎます) けど、
+かなりの人数から聞いたので便利なことは便利なんだと思います。</p>
+<!-- <p>Apparently you can run <code>git rebase --onto main otherbranch mybranch</code> to do
 that. It seems impossible to me to remember the syntax for this (there are 3
 different branch names involved, which for me is too many), but I heard about it from a
-bunch of people so I guess it must be useful.</p>
+bunch of people so I guess it must be useful.</p> -->
 
 <h3 id="commit">commit</h3>
 
-<p>Someone mentioned that they found it confusing that commit is used both as a
-verb and a noun in git.</p>
+<p>commit が動詞でも名詞でも使われるので困るという人もいました。</p>
+<!-- <p>Someone mentioned that they found it confusing that commit is used both as a
+verb and a noun in git.</p> -->
 
-<p>for example:</p>
+<p>たとえば:</p>
+<!-- <p>for example:</p> -->
 
 <ul>
-<li>verb: &ldquo;Remember to commit often&rdquo;</li>
-<li>noun: &ldquo;the most recent commit on <code>main</code>&ldquo;</li>
+<li>動詞: 「忘れずこまめに commit しなさい」</li>
+<!-- <li>verb: “Remember to commit often”</li> -->
+<li>名詞: 「<code>main</code> 上の最新 commit は……」</li>
+<!-- <li>noun: “the most recent commit on <code>main</code>“</li> -->
 </ul>
 
-<p>My guess is that most folks get used to this relatively quickly, but this use
-of &ldquo;commit&rdquo; is different from how it&rsquo;s used in SQL databases, where I think
-&ldquo;commit&rdquo; is just a verb (you &ldquo;COMMIT&rdquo; to end a transaction) and not a noun.</p>
+<p>まあ、ほとんどの人は比較的すぐ慣れるでしょうけど、この用法は
+SQL データベースでの commit の用法とは違うんですよね。SQL では
+commit は動詞だけ (commit してトランザクションを終わらせる) で、名詞になりません。</p>
+<!-- <p>My guess is that most folks get used to this relatively quickly, but this use
+of “commit” is different from how it’s used in SQL databases, where I think
+“commit” is just a verb (you “COMMIT” to end a transaction) and not a noun.</p> -->
 
-<p>Also in git you can think of a Git commit in 3 different ways:</p>
+<p>それに、git における commit は 3 通りに解釈できます:</p>
+<!-- <p>Also in git you can think of a Git commit in 3 different ways:</p> -->
 
 <ol>
-<li>a <strong>snapshot</strong> of the current state of every file</li>
-<li>a <strong>diff</strong> from the parent commit</li>
-<li>a <strong>history</strong> of every previous commit</li>
+<li>各ファイルの状態 (<strong>snapshot</strong>)</li>
+<!-- <li>a <strong>snapshot</strong> of the current state of every file</li> -->
+<li>親 commit からの差分 (<strong>diff</strong>)</li>
+<!-- <li>a <strong>diff</strong> from the parent commit</li> -->
+<li>前 commit のログ (<strong>history</strong>)</li>
+<!-- <li>a <strong>history</strong> of every previous commit</li> -->
 </ol>
 
-<p>None of those are wrong: different commands use commits in all of these ways.
+<p>どれも間違いではありません: コマンドによって、commit をどの意味でも使います。
+たとえば <code>git show</code> は commit を diff として扱い、<code>git log</code> は
+history として、<code>git rebase</code> は snapshot として扱います。</p>
+<!-- <p>None of those are wrong: different commands use commits in all of these ways.
 For example <code>git show</code> treats a commit as a diff, <code>git log</code> treats it as a
-history, and <code>git restore</code> treats it as a snapshot.</p>
+history, and <code>git restore</code> treats it as a snapshot.</p> -->
 
-<p>But git&rsquo;s terminology doesn&rsquo;t do much to help you understand in which sense a
-commit is being used by a given command.</p>
+<p>とはいえ git の用語を覚えても各コマンドで commit がどういう意味で使われているのか理解するのには
+あまり役立ちません。</p>
+<!-- <p>But git’s terminology doesn’t do much to help you understand in which sense a
+commit is being used by a given command.</p> -->
 
 <h3 id="more-confusing-terms">more confusing terms</h3>
 
-<p>Here are a bunch more confusing terms. I don&rsquo;t know what a lot of these mean.</p>
+<p>もっと色々と分かりにくい用語があります。意味を知らないものもたくさんです。</p>
+<!-- <p>Here are a bunch more confusing terms. I don’t know what a lot of these mean.</p> -->
 
-<p>things I don&rsquo;t really understand myself:</p>
+<p>私がよく分かってないやつ:</p>
+<!-- <p>things I don’t really understand myself:</p> -->
 
 <ul>
-<li>&ldquo;the git pickaxe&rdquo; (maybe this is <code>git log -S</code> and <code>git log -G</code>, for searching the diffs of previous commits?)</li>
-<li>submodules (all I know is that they don&rsquo;t work the way I want them to work)</li>
-<li>&ldquo;cone mode&rdquo; in git sparse checkout (no idea what this is but someone mentioned it)</li>
+<li>git の pickaxe (たぶん <code>git log -S</code> とか <code>git log -G</code> だと思うんです、以前の差分を検索するのかな？)</li>
+<!-- <li>“the git pickaxe” (maybe this is <code>git log -S</code> and <code>git log -G</code>, for searching the diffs of previous commits?)</li> -->
+<li>submodules (私に分かるのは、思いどおりに動作してくれないということだけ)</li>
+<!-- <li>submodules (all I know is that they don’t work the way I want them to work)</li> -->
+<li>git sparse checkout の cone mode (私は何も分かりませんが、これを挙げた人がいました)</li>
+<!-- <li>“cone mode” in git sparse checkout (no idea what this is but someone mentioned it)</li> -->
 </ul>
 
-<p>things that people mentioned finding confusing but that I left out of this post
-because it was already 3000 words:</p>
+<p>難しいと言われたけど今回はもう 3000語になったので選外なやつ:</p>
+<!-- <p>things that people mentioned finding confusing but that I left out of this post
+because it was already 3000 words:</p> -->
 
 <ul>
+<li>blob と tree</li>
+<li>merge の方向</li>
+<li>origin / upstream / downstream</li>
+<li><code>push</code> と <code>pull</code> が正反対ではないこと</li>
+<li><code>fetch</code> と <code>pull</code> の関係性 (pull = fetch + merge)</li>
+<li>git porcelain</li>
+<li>subtrees</li>
+<li>worktrees</li>
+<li>stash</li>
+<li>master や main (git 内部で特別な意味がありそうに見えて実はそうでもないという)</li>
+<li>どういうとき <code>origin main</code> って書いて (<code>git push origin main</code>)、どういうとき <code>origin/main</code> って書くか</li>
+<!--
 <li>blob, tree</li>
-<li>the direction of &ldquo;merge&rdquo;</li>
-<li>&ldquo;origin&rdquo;, &ldquo;upstream&rdquo;, &ldquo;downstream&rdquo;</li>
-<li>that <code>push</code> and <code>pull</code> aren&rsquo;t opposites</li>
+<li>the direction of “merge”</li>
+<li>“origin”, “upstream”, “downstream”</li>
+<li>that <code>push</code> and <code>pull</code> aren’t opposites</li>
 <li>the relationship between <code>fetch</code> and <code>pull</code> (pull = fetch + merge)</li>
 <li>git porcelain</li>
 <li>subtrees</li>
 <li>worktrees</li>
 <li>the stash</li>
-<li>&ldquo;master&rdquo; or &ldquo;main&rdquo; (it sounds like it has a special meaning inside git but it doesn&rsquo;t)</li>
+<li>“master” or “main” (it sounds like it has a special meaning inside git but it doesn’t)</li>
 <li>when you need to use <code>origin main</code> (like <code>git push origin main</code>) vs <code>origin/main</code></li>
+-->
 </ul>
 
-<p>github terms people mentioned being confused by:</p>
+<p>github 特有の用語で難しいと言われたやつ:</p>
+<!-- <p>github terms people mentioned being confused by:</p> -->
 
 <ul>
-<li>&ldquo;pull request&rdquo; (vs &ldquo;merge request&rdquo; in gitlab which folks seemed to think was clearer)</li>
-<li>what &ldquo;squash and merge&rdquo; and &ldquo;rebase and merge&rdquo; do (I&rsquo;d never actually heard of <code>git merge --squash</code> until yesterday, I thought &ldquo;squash and merge&rdquo; was a special github feature)</li>
+<li>pull request (gitlab の merge request の方が分かりやすいと思われていたみたい)</li>
+<!-- <li>“pull request” (vs “merge request” in gitlab which folks seemed to think was clearer)</li> -->
+<li>squash and merge と rebase and merge の動作 (実は昨日初めて <code>git merge --squash</code> を知ったので、squash and merge は github 特有の機能だと思ってしまいました)</li>
+<!-- <li>what “squash and merge” and “rebase and merge” do (I’d never actually heard of <code>git merge --squash</code> until yesterday, I thought “squash and merge” was a special github feature)</li> -->
 </ul>
 
-<h3 id="it-s-genuinely-every-git-term">it&rsquo;s genuinely &ldquo;every git term&rdquo;</h3>
+<h3 id="it-s-genuinely-every-git-term">it’s genuinely “every git term”</h3>
 
-<p>I was surprised that basically every other core feature of git was mentioned by
-at least one person as being confusing in some way. I&rsquo;d be interested in
-hearing more examples of confusing git terms that I missed too.</p>
+<p>驚いたのは、だいたい git のコア機能ひとつひとつに最低 1人は「難しい」と言う人がいたことです。
+まだまだ他のややこしい git 用語の例をお聞きしたいです。</p>
+<!-- <p>I was surprised that basically every other core feature of git was mentioned by
+at least one person as being confusing in some way. I’d be interested in
+hearing more examples of confusing git terms that I missed too.</p> -->
 
-<p>There&rsquo;s another great post about this from 2012 called <a href="https://longair.net/blog/2012/05/07/the-most-confusing-git-terminology/">the most confusing git terminology</a>.
-It talks more about how git&rsquo;s terminology relates to CVS and Subversion&rsquo;s terminology.</p>
+<p>There’s another great post about this from 2012 called <a href="https://longair.net/blog/2012/05/07/the-most-confusing-git-terminology/">the most confusing git terminology</a>.
+It talks more about how git’s terminology relates to CVS and Subversion’s terminology.</p>
 
-<p>If I had to pick the 3 most confusing git terms, I think right now I&rsquo;d pick:</p>
+<p>困る git 用語トップ 3 を選ぶとすれば、今のところはこうです:</p>
+<!-- <p>If I had to pick the 3 most confusing git terms, I think right now I’d pick:</p> -->
 
 <ul>
-<li>a <code>head</code> is a branch, <code>HEAD</code> is the current branch</li>
-<li>&ldquo;remote tracking branch&rdquo; and &ldquo;branch that tracks a remote&rdquo; being different things</li>
-<li>how &ldquo;index&rdquo;, &ldquo;staged&rdquo;, &ldquo;cached&rdquo; all refer to the same thing</li>
+<li><code>head</code> はブランチで、<code>HEAD</code> は現ブランチ</li>
+<!-- <li>a <code>head</code> is a branch, <code>HEAD</code> is the current branch</li> -->
+<li>remote tracking branch と「リモートを track するブランチ」は別物</li>
+<!-- <li>“remote tracking branch” and “branch that tracks a remote” being different things</li> -->
+<li>index, staged, cached が全部同じものを指す理由</li>
+<!-- <li>how “index”, “staged”, “cached” all refer to the same thing</li> -->
 </ul>
 
-<h3 id="that-s-all">that&rsquo;s all!</h3>
+<h3 id="that-s-all">that’s all!</h3>
 
-<p>I learned a lot from writing this &ndash; I learned a few new facts about git, but
+<p>本日はここまで！ この記事を書いていてとても勉強になりました。git に関する新事実を
+いくつか知ることもできましたし、でももっと大切なこととして、「git のすべてが分かりにくい」
+と言う人がどういう意味でそう言っているのかを以前よりも少しだけよく分かるようになった気がします。</p>
+<!-- <p>I learned a lot from writing this – I learned a few new facts about git, but
 more importantly I feel like I have a slightly better sense now for what
-someone might mean when they say that everything in git is confusing.</p>
+someone might mean when they say that everything in git is confusing.</p> -->
 
-<p>I really hadn&rsquo;t thought about a lot of these issues before &ndash; like I&rsquo;d never
-realized how &ldquo;tracking&rdquo; is used in such a weird way when discussing branches.</p>
+<p>それまでは、あまりこういう問題について考えたことがありませんでした。たとえば
+ブランチの話をするとき track という言葉をこんな奇妙な方法で使っているとは思っていませんでした。</p>
+<!-- <p>I really hadn’t thought about a lot of these issues before – like I’d never
+realized how “tracking” is used in such a weird way when discussing branches.</p> -->
 
-<p>Also as usual I might have made some mistakes, especially since I ended up in a
-bunch of corners of git that I hadn&rsquo;t visited before.</p>
-
-<p><small>
-Also a very quick plug: I&rsquo;m working on writing a
-<a href="https://wizardzines.com">zine</a> about git, if you&rsquo;re interested in getting an email when it comes out you can
-sign up to my <a href="https://wizardzines.com/zine-announcements/">very infrequent announcements mailing list</a>.
-</small></p>
+<p>あと、いつもどおり間違いがあるかもしれません。特に git の、これまで見たこともない
+隅のほうまで足を伸ばすことになりましたから。</p>
+<!-- <p>Also as usual I might have made some mistakes, especially since I ended up in a
+bunch of corners of git that I hadn’t visited before.</p> -->
 
 <h3 id="translations-of-this-post">translations of this post</h3>
 
 <ul>
-<li><a href="https://ptrtoj.com/confusing-git-term/">Korean</a></li>
+<li><a href="https://gitster.livejournal.com/39629.html">英語原文 (original)</a></li>
+<li><a href="https://ptrtoj.com/confusing-git-term/">韓国語</a></li>
+<!-- <li><a href="https://ptrtoj.com/confusing-git-term/">Korean</a></li> -->
 </ul>
 
 </div>
-
 </article>
+</body>
+</html>
